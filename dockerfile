@@ -5,7 +5,7 @@ FROM node:latest as build-stage
 WORKDIR /app
 
 # Copy file package.json dan install dependensi
-COPY package*.json ./
+COPY package.json package-lock.json ./
 RUN npm install
 
 # Copy semua file proyek ke dalam container
@@ -17,10 +17,16 @@ RUN npm run build
 # Stage 2: Serve menggunakan NGINX
 FROM nginx:stable-alpine AS production-stage
 
-RUN mkdir /app
-
 # Copy output build Vue ke direktori NGINX
-COPY --from=build-stage /app/dist /app
+COPY --from=build-stage /app/dist /usr/share/nginx/html
 
 # Copy custom nginx configuration
 COPY nginx.conf /etc/nginx/nginx.conf
+
+# Tidak perlu EXPOSE, Cloud Run akan menangani port
+
+# Gunakan entrypoint script untuk mengatur port dinamis
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]
