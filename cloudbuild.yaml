@@ -1,5 +1,5 @@
 steps:
-  # Step 1: Build Docker Image
+  # Step 1: Build Docker image
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'build'
@@ -7,17 +7,25 @@ steps:
       - 'gcr.io/$PROJECT_ID/vue-app:$COMMIT_SHA'
       - '.'
 
-  # Step 2: Push Docker Image to Google Container Registry
+  # Step 2: Push Docker image ke Google Container Registry
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'push'
       - 'gcr.io/$PROJECT_ID/vue-app:$COMMIT_SHA'
 
-images:
-  - 'gcr.io/$PROJECT_ID/vue-app:$COMMIT_SHA'
+  # Step 3: Deploy ke Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    args:
+      - 'gcloud'
+      - 'run'
+      - 'deploy'
+      - 'vue-app'
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/vue-app:$COMMIT_SHA'
+      - '--platform'
+      - 'managed'
+      - '--region'
+      - 'us-central1'
+      - '--allow-unauthenticated'
 
-# Optional: Define the log bucket for build logs
-options:
-  logging: CLOUD_LOGGING_ONLY
-
-timeout: '1200s'
+timeout: 1200s
