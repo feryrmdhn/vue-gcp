@@ -24,5 +24,3 @@ COPY --from=build-stage /app/dist /app
 
 # Copy custom nginx configuration
 COPY nginx.conf /etc/nginx/nginx.conf
-
-COPY mime.types /etc/nginx/mime.types
