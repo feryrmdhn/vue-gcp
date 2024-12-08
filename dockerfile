@@ -20,8 +20,13 @@ FROM nginx:stable-alpine AS production-stage
 # Copy output build Vue ke direktori NGINX
 COPY --from=build-stage /app/dist /usr/share/nginx/html
 
-# Expose port 80
-EXPOSE 8080
+# Copy custom nginx configuration
+COPY nginx.conf /etc/nginx/nginx.conf
 
-# Start NGINX
-CMD ["nginx", "-g", "daemon off;"]
+# Tidak perlu EXPOSE, Cloud Run akan menangani port
+
+# Gunakan entrypoint script untuk mengatur port dinamis
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]
