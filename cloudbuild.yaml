@@ -28,4 +28,10 @@ steps:
       - 'us-central1'
       - '--allow-unauthenticated'
 
+images:
+  - 'gcr.io/$PROJECT_ID/vue-app:$COMMIT_SHA'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+
 timeout: 1200s
